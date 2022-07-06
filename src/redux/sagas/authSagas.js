@@ -1,0 +1,37 @@
+import { takeLatest, put } from 'redux-saga/effects';
+import ACTION_TYPES from '../actions/types';
+import * as HTTP_API from '../../api/http';
+import AuthActionCreators from '../actions/authActionCreators';
+
+function * loginSaga (action) {
+  try {
+    const {
+      data: {
+        data: { user },
+      },
+    } = yield HTTP_API.login(action.payload);
+
+    yield put(AuthActionCreators.authSuccess(user));
+  } catch (error) {
+    yield put(AuthActionCreators.authError(error));
+  }
+}
+
+function * refreshSaga (action) {
+  try {
+    const {
+      data: {
+        data: { user },
+      },
+    } = yield HTTP_API.refresh(action.payload);
+
+    yield put(AuthActionCreators.authSuccess(user));
+  } catch (error) {
+    yield put(AuthActionCreators.authError(error));
+  }
+}
+
+export default function * authSagas () {
+  yield takeLatest(ACTION_TYPES.LOGIN_REQUEST, loginSaga);
+  yield takeLatest(ACTION_TYPES.REFRESH_REQUEST, refreshSaga);
+}
