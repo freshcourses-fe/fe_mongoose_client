@@ -7,6 +7,11 @@ const httpClient = axios.create({
 
 let accessTokenFromMemory = null;
 
+function setTokens ({ accessToken, refreshToken }) {
+  accessTokenFromMemory = accessToken;
+  localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
+}
+
 httpClient.interceptors.request.use(
   function (config) {
     // место где мы впаиваем accessToken
@@ -17,51 +22,43 @@ httpClient.interceptors.request.use(
     return config;
   },
   function (error) {
-    // Do something with request error
+    // ошибка перед запросом
     return Promise.reject(error);
   }
 );
 
 httpClient.interceptors.response.use(
   function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
+    // запускаестся когда мы получаем положительный ответ с сервера
     if (response?.data?.data?.tokenPair) {
-      const { accessToken, refreshToken } = response.data.data.tokenPair;
-
-      accessTokenFromMemory = accessToken;
-      localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
+      setTokens(response.data.data.tokenPair);
     }
     return response;
   },
   async function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    console.log(error);
+    // запускается когда респонс с сервера приходит со статусом 300+ (ошибки)
     const refreshTokenFromLS = localStorage.getItem(CONSTANTS.REFRESH_TOKEN);
 
     const {
       response: { status },
     } = error;
 
+    // делаем запрос рефреш если прогорел токен и у нас есть рефреш в локал сторадже
     if (status === 419 && refreshTokenFromLS) {
       const {
         data: {
           data: {
-            tokenPair: { accessToken, refreshToken },
+            tokenPair
           },
         },
       } = await axios.post(`${CONSTANTS.HTTP_SERVER_URL}/users/auth/refresh`, {
         refreshToken: refreshTokenFromLS,
       });
 
-      accessTokenFromMemory = accessToken;
-      localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
-
+      setTokens(tokenPair)
       error.config.headers['Authorization'] = `Bearer ${accessTokenFromMemory}`;
 
-    
-      return httpClient.request(error.config)
+      return httpClient.request(error.config); // повторяем изначальный запрос
     }
     return Promise.reject(error);
   }
