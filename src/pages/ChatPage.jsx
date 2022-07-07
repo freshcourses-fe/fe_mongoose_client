@@ -14,13 +14,17 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(ChatActionCreators.getMsgReq());
+
+    return () => {
+      dispatch(ChatActionCreators.clearChat());
+    };
   }, []);
 
   const onSubmit = ({ text }, utils) => {
     dispatch(ChatActionCreators.createMsgReq({ text, user: user._id }));
     utils.resetForm();
   };
-  
+
   return (
     <div>
       CHAT

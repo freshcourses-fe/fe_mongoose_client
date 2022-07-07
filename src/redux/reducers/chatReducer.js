@@ -9,6 +9,9 @@ const initialState = {
 
 export default function chatReducer (state = initialState, action) {
   switch (action.type) {
+    case ACTION_TYPES.CLEAR_CHAT: return {
+      ...initialState
+    }
     case ACTION_TYPES.CREATE_MESSAGE_REQ:
     case ACTION_TYPES.GET_MESSAGES_REQ:
       return produce(state, draftState => {

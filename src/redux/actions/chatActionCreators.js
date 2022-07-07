@@ -36,5 +36,9 @@ class ChatActionCreators {
       payload: err,
     };
   }
+
+  static clearChat () {
+    return { type: ACTION_TYPES.CLEAR_CHAT };
+  }
 }
 export default ChatActionCreators;
