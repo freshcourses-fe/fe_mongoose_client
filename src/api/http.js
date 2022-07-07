@@ -47,15 +47,13 @@ httpClient.interceptors.response.use(
     if (status === 419 && refreshTokenFromLS) {
       const {
         data: {
-          data: {
-            tokenPair
-          },
+          data: { tokenPair },
         },
       } = await axios.post(`${CONSTANTS.HTTP_SERVER_URL}/users/auth/refresh`, {
         refreshToken: refreshTokenFromLS,
       });
 
-      setTokens(tokenPair)
+      setTokens(tokenPair);
       error.config.headers['Authorization'] = `Bearer ${accessTokenFromMemory}`;
 
       return httpClient.request(error.config); // повторяем изначальный запрос
@@ -70,4 +68,4 @@ export const refresh = refreshToken =>
 export const signup = userData =>
   httpClient.post(`users/auth/register`, userData);
 
-export const test = () => httpClient.get('test');
+export const getMessages = () => httpClient.get('messages');
