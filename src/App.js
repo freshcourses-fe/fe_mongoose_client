@@ -8,6 +8,7 @@ import CONSTANTS from './constants';
 import ChatPage from './pages/ChatPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
 import AuthActionCreators from './redux/actions/authActionCreators';
 
 function App () {
@@ -31,6 +32,9 @@ function App () {
             <Link to='/login'>Login</Link>
           </li>
           <li>
+            <Link to='/signup'>Sign Up</Link>
+          </li>
+          <li>
             <Link to='/chat'>Chat</Link>
           </li>
         </ul>
@@ -38,6 +42,7 @@ function App () {
       <Switch>
         <Route exact path='/' component={HomePage} />
         <PublicOnlyRoute exact path='/login' component={LoginPage} />
+        <PublicOnlyRoute exact path='/signup' component={RegistrationPage} />
         <PrivateRoute exact path='/chat' component={ChatPage} />
       </Switch>
     </Router>

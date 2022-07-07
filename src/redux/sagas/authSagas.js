@@ -31,7 +31,23 @@ function * refreshSaga (action) {
   }
 }
 
+function * signupSaga (action) {
+  try {
+    const {
+      data: {
+        data: { user },
+      },
+    } = yield HTTP_API.signup(action.payload);
+
+    yield put(AuthActionCreators.authSuccess(user));
+  } catch (error) {
+    yield put(AuthActionCreators.authError(error));
+  }
+}
+
+
 export default function * authSagas () {
   yield takeLatest(ACTION_TYPES.LOGIN_REQUEST, loginSaga);
   yield takeLatest(ACTION_TYPES.REFRESH_REQUEST, refreshSaga);
+  yield takeLatest(ACTION_TYPES.SIGN_UP_REQUEST, signupSaga);
 }
